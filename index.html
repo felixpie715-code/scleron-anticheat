@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050914">
+  <meta name="description" content="Scleron Anti Cheat: seguridad inteligente para servidores FiveM. Protección configurable, registros claros y herramientas para administradores.">
+  <meta property="og:title" content="Scleron Anti Cheat — Seguridad para FiveM">
+  <meta property="og:description" content="La próxima línea de defensa de tu servidor FiveM.">
+  <meta property="og:type" content="website">
+  <title>Scleron Anti Cheat | Seguridad para FiveM</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050914;
+      --panel: rgba(11, 20, 39, .82);
+      --panel-2: #0a1427;
+      --blue: #159cff;
+      --blue-bright: #55c5ff;
+      --cyan: #00e5ff;
+      --text: #edf6ff;
+      --muted: #94a8c3;
+      --line: rgba(93, 173, 255, .19);
+      --max: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6; overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0, 132, 255, .16), transparent 43%),
+        radial-gradient(ellipse at 100% 50%, rgba(0, 229, 255, .055), transparent 35%),
+        linear-gradient(rgba(20, 74, 125, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 74, 125, .06) 1px, transparent 1px);
+      background-size: auto, auto, 42px 42px, 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 92%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin-inline: auto; }
+    .nav-wrap { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(18px); background: rgba(5, 9, 20, .78); border-bottom: 1px solid var(--line); }
+    nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 850; letter-spacing: .08em; }
+    .brand-mark { width: 39px; height: 39px; display: grid; place-items: center; border: 1px solid rgba(85,197,255,.65); border-radius: 12px; color: var(--cyan); background: linear-gradient(145deg, rgba(21,156,255,.2), rgba(0,229,255,.03)); box-shadow: 0 0 24px rgba(21,156,255,.13), inset 0 0 15px rgba(21,156,255,.08); }
+    .brand-mark svg { width: 24px; }
+    .brand small { display: block; color: var(--muted); font-size: 9px; letter-spacing: .24em; font-weight: 700; margin-top: -3px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; color: #b5c6dc; font-size: 13px; font-weight: 650; }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-cta, .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 800; border: 1px solid transparent; transition: .2s ease; cursor: pointer; }
+    .nav-cta, .btn-primary { color: #00111f; background: linear-gradient(110deg, var(--blue-bright), #149aff); box-shadow: 0 8px 28px rgba(21,156,255,.19); }
+    .nav-cta:hover, .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(21,156,255,.3); }
+    .btn-secondary { color: var(--text); background: rgba(11, 25, 47, .65); border-color: rgba(108,179,255,.3); }
+    .btn-secondary:hover { border-color: var(--blue-bright); background: rgba(21,156,255,.1); }
+    .menu-toggle { display: none; border: 1px solid var(--line); background: var(--panel); color: var(--text); border-radius: 9px; padding: 9px 12px; font-size: 20px; }
+    .hero { min-height: 690px; display: grid; align-items: center; padding: 82px 0 92px; position: relative; }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; align-items: center; gap: 48px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 7px 11px; border: 1px solid rgba(21,156,255,.3); border-radius: 999px; color: #9ddcff; background: rgba(21,156,255,.07); font-size: 10px; letter-spacing: .13em; font-weight: 800; text-transform: uppercase; }
+    .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+    h1 { font-size: clamp(42px, 6.4vw, 76px); line-height: .99; letter-spacing: -.055em; margin: 25px 0 23px; font-weight: 900; }
+    .gradient-text { background: linear-gradient(100deg, #fff 10%, #72caff 55%, #00e5ff); color: transparent; background-clip: text; -webkit-background-clip: text; }
+    .hero p { max-width: 570px; color: var(--muted); font-size: 16px; line-height: 1.8; margin: 0; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 29px; }
+    .hero-note { margin-top: 20px; color: #6f87a5; font-size: 11px; display: flex; gap: 8px; align-items: center; }
+    .hero-note svg { color: var(--cyan); width: 15px; flex-shrink: 0; }
+    .visual { min-height: 420px; position: relative; display: grid; place-items: center; }
+    .orbit { position: absolute; width: min(100%, 440px); aspect-ratio: 1; border: 1px solid rgba(21,156,255,.16); border-radius: 50%; transform: rotate(-22deg) scaleY(.72); box-shadow: 0 0 65px rgba(0,125,255,.05); }
+    .orbit::before, .orbit::after { content: ""; position: absolute; border: 1px solid rgba(0,229,255,.15); border-radius: 50%; inset: 12%; }
+    .orbit::after { inset: 25%; border-color: rgba(21,156,255,.22); }
+    .core { width: 210px; height: 240px; position: relative; display: grid; place-items: center; filter: drop-shadow(0 0 42px rgba(21,156,255,.25)); animation: float 5s ease-in-out infinite; }
+    .core svg { width: 100%; height: 100%; overflow: visible; }
+    .scan { position: absolute; width: 310px; height: 1px; background: linear-gradient(90deg, transparent, #00e5ff, transparent); box-shadow: 0 0 18px #00aaff; animation: scan 4.5s ease-in-out infinite; opacity: .65; }
+    .float-card { position: absolute; border: 1px solid rgba(85,197,255,.24); background: rgba(6,15,31,.88); backdrop-filter: blur(12px); padding: 12px 15px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,.25); }
+    .float-card strong { display: block; font-size: 12px; }
+    .float-card span { color: var(--muted); font-size: 10px; }
+    .float-card .tiny-dot { display: inline-block; width: 6px; height: 6px; background: #00e5ff; border-radius: 50%; margin-right: 6px; }
+    .fc-top { top: 14%; right: -1%; } .fc-bottom { bottom: 13%; left: -2%; }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+    @keyframes scan { 0%,100% { transform: translateY(-115px); opacity: 0; } 35%,65% { opacity: .75; } 50% { transform: translateY(115px); } }
+    .trust-strip { border-block: 1px solid var(--line); background: rgba(7,15,29,.65); }
+    .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 21px 0; flex-wrap: wrap; }
+    .trust-label { color: #6983a3; font-size: 10px; text-transform: uppercase; letter-spacing: .17em; font-weight: 800; }
+    .trust-item { color: #b6cbe1; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .trust-item svg { width: 17px; color: var(--blue-bright); }
+    section { padding: 100px 0; }
+    .section-head { max-width: 650px; margin-bottom: 40px; }
+    .section-kicker { color: var(--cyan); text-transform: uppercase; letter-spacing: .2em; font-size: 10px; font-weight: 850; }
+    h2 { font-size: clamp(30px, 4vw, 45px); line-height: 1.1; letter-spacing: -.04em; margin: 12px 0 15px; }
+    .section-head p { color: var(--muted); margin: 0; line-height: 1.8; font-size: 14px; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feature { padding: 25px; min-height: 210px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(145deg, rgba(13,26,49,.86), rgba(6,13,27,.76)); transition: transform .25s, border-color .25s; }
+    .feature:hover { transform: translateY(-4px); border-color: rgba(21,156,255,.5); }
+    .icon-box { width: 43px; height: 43px; display: grid; place-items: center; border-radius: 12px; color: var(--cyan); background: rgba(21,156,255,.1); border: 1px solid rgba(21,156,255,.19); }
+    .icon-box svg { width: 21px; height: 21px; }
+    .feature h3 { font-size: 15px; margin: 20px 0 8px; }
+    .feature p { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 0; }
+    .status-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 40px; align-items: center; }
+    .status-card { padding: 26px; border-radius: 18px; background: linear-gradient(150deg, rgba(12,28,51,.94), rgba(5,12,25,.96)); border: 1px solid rgba(21,156,255,.25); box-shadow: 0 20px 70px rgba(0,0,0,.15); }
+    .status-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    .status-top strong { font-size: 13px; }
+    .pill { color: #9ccfff; background: rgba(21,156,255,.12); border: 1px solid rgba(21,156,255,.2); border-radius: 99px; padding: 5px 9px; font-size: 9px; font-weight: 800; }
+    .status-row { display: flex; justify-content: space-between; align-items: center; padding: 17px 0; border-bottom: 1px solid rgba(93,173,255,.1); font-size: 12px; color: #c2d2e5; }
+    .status-row:last-child { border: 0; padding-bottom: 0; }
+    .status-value { color: var(--muted); font-size: 10px; }
+    .status-value::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--cyan); border-radius: 50%; margin-right: 7px; box-shadow: 0 0 8px var(--cyan); }
+    .benefits { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 13px; }
+    .benefits li { display: flex; gap: 11px; align-items: flex-start; color: #b7c8dc; font-size: 13px; }
+    .benefits svg { width: 17px; height: 17px; color: var(--cyan); flex-shrink: 0; margin-top: 2px; }
+    .release { padding-top: 10px; }
+    .release-card { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 34px; border: 1px solid rgba(21,156,255,.28); border-radius: 20px; background: radial-gradient(ellipse at 100% 0%, rgba(21,156,255,.12), transparent 45%), var(--panel); }
+    .release-card h3 { margin: 0 0 8px; font-size: 21px; }
+    .release-card p { color: var(--muted); font-size: 13px; margin: 0; }
+    .release-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+    .release-meta span { color: #9cb2cb; border: 1px solid var(--line); padding: 5px 9px; border-radius: 7px; font-size: 10px; }
+    .btn-disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+    .cta { padding: 28px 0 100px; }
+    .cta-inner { text-align: center; padding: 60px 25px; border: 1px solid rgba(21,156,255,.22); border-radius: 22px; background: radial-gradient(ellipse at 50% 0%, rgba(21,156,255,.15), transparent 62%), rgba(7,15,30,.7); }
+    .cta-inner p { max-width: 560px; margin: 0 auto 24px; color: var(--muted); font-size: 13px; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .copyright { color: #6e839d; font-size: 11px; }
+    .footer-links { display: flex; gap: 18px; color: #91a7c1; font-size: 11px; }
+    .footer-links a:hover { color: var(--cyan); }
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 50; max-width: calc(100% - 30px); background: #0b1c33; border: 1px solid rgba(85,197,255,.4); color: #eaf7ff; padding: 13px 18px; border-radius: 12px; font-size: 12px; box-shadow: 0 12px 45px #0008; transition: .25s; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+    @media (max-width: 850px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 5px; }
+      .hero { padding: 70px 0 45px; min-height: auto; }
+      .hero-copy { text-align: center; }
+      .hero-copy .eyebrow { margin-inline: auto; }
+      .hero p { margin-inline: auto; }
+      .hero-actions, .hero-note { justify-content: center; }
+      .visual { min-height: 350px; }
+      .core { width: 165px; height: 190px; }
+      .orbit { max-width: 350px; }
+      .fc-top { right: 5%; } .fc-bottom { left: 5%; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      .status-grid { grid-template-columns: 1fr; gap: 28px; }
+      section { padding: 75px 0; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(var(--max), calc(100% - 30px)); }
+      nav { min-height: 67px; }
+      .brand { font-size: 12px; }
+      .brand-mark { width: 35px; height: 35px; }
+      .menu-toggle { display: inline-block; }
+      .nav-links { display: none; position: absolute; top: 66px; left: 0; right: 0; padding: 18px 22px 22px; background: rgba(5,9,20,.98); border-bottom: 1px solid var(--line); flex-direction: column; align-items: stretch; gap: 0; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 0; }
+      .nav-links .nav-cta { margin-top: 8px; text-align: center; }
+      h1 { font-size: clamp(41px, 13vw, 59px); }
+      .hero p { font-size: 14px; }
+      .visual { min-height: 300px; }
+      .core { width: 140px; height: 165px; }
+      .orbit { width: 290px; }
+      .float-card { padding: 9px 11px; }
+      .fc-top { top: 10%; right: 0; } .fc-bottom { bottom: 9%; left: 0; }
+      .trust-inner { justify-content: center; gap: 14px 20px; }
+      .trust-label { width: 100%; text-align: center; }
+      .trust-item { font-size: 10px; }
+      .features { grid-template-columns: 1fr; }
+      .feature { min-height: auto; }
+      .section-head { margin-bottom: 27px; }
+      .release-card { grid-template-columns: 1fr; padding: 24px; }
+      .release-card .btn { width: 100%; }
+      .cta-inner { padding: 44px 18px; }
+      .footer-inner { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-wrap">
+    <nav class="wrap" aria-label="Navegación principal">
+      <a class="brand" href="#inicio" aria-label="Scleron Anti Cheat, inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 3 27 7v8c0 7-4.8 11.5-11 14C9.8 26.5 5 22 5 15V7l11-4Z" stroke="currentColor" stroke-width="2"/><path d="m11 16 3.2 3.2L21.5 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>SCLERON<small>ANTI CHEAT</small></span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#proteccion">Protección</a>
+        <a href="#tecnologia">Tecnología</a>
+        <a href="#descargas">Descargas</a>
+        <a href="#actualizaciones">Actualizaciones</a>
+        <a class="nav-cta" href="#descargas">Explorar versión <span aria-hidden="true">↗</span></a>
+      </div>
+    </nav>
+  </div>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse"></span> Seguridad para FiveM · En desarrollo</div>
+          <h1>PROTEGE TU<br><span class="gradient-text">SERVIDOR.</span></h1>
+          <p>Scleron Anti Cheat nace para ayudar a los administradores de FiveM a detectar comportamientos sospechosos, revisar alertas y proteger la experiencia de juego con herramientas configurables.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#descargas">Explorar el proyecto <span aria-hidden="true">→</span></a>
+            <a class="btn btn-secondary" href="#proteccion">Conocer funciones</a>
+          </div>
+          <div class="hero-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Proyecto independiente. Las funciones se publicarán tras sus pruebas.
+          </div>
+        </div>
+        <div class="visual" aria-label="Ilustración futurista de un escudo digital">
+          <div class="orbit"></div>
+          <div class="scan"></div>
+          <div class="core">
+            <svg viewBox="0 0 220 250" fill="none" aria-hidden="true">
+              <defs><linearGradient id="shield" x1="20" y1="10" x2="200" y2="240" gradientUnits="userSpaceOnUse"><stop stop-color="#72d8ff"/><stop offset=".5" stop-color="#159cff"/><stop offset="1" stop-color="#0752c7"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+              <path d="M110 10 194 40v65c0 59-35 101-84 127-49-26-84-68-84-127V40l84-30Z" fill="#0b1b34" fill-opacity=".8" stroke="url(#shield)" stroke-width="3" filter="url(#glow)"/>
+              <path d="M110 27 178 51v53c0 48-27 82-68 105-41-23-68-57-68-105V51l68-24Z" stroke="#38baff" stroke-opacity=".35" stroke-width="1.5"/>
+              <path d="m73 121 24 24 52-57" stroke="#7ce8ff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+              <circle cx="110" cy="125" r="75" stroke="#159cff" stroke-opacity=".18" stroke-dasharray="3 8"/>
+            </svg>
+          </div>
+          <div class="float-card fc-top"><strong><i class="tiny-dot"></i> MONITOREO</strong><span>Eventos y alertas configurables</span></div>
+          <div class="float-card fc-bottom"><strong>◆ SCLERON CORE</strong><span>Seguridad en desarrollo</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-strip">
+      <div class="wrap trust-inner">
+        <span class="trust-label">Diseñado para administradores</span>
+        <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg> Seguridad configurable</span>
+        <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Registros claros</span>
+        <span class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg> Interfaz adaptable</span>
+      </div>
+    </div>
+
+    <section id="proteccion">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="section-kicker">Módulos de seguridad</span>
+          <h2>Más visibilidad.<br><span class="gradient-text">Más control.</span></h2>
+          <p>Una base modular para detectar actividad anómala y dar a tu equipo de administración información útil antes de tomar medidas.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <h3>Detección de anomalías</h3><p>Reglas configurables para señalar patrones de juego o estados que requieren revisión.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3>Eventos sospechosos</h3><p>Registro de eventos relevantes para ayudar a investigar posibles abusos de recursos.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></svg></div>
+            <h3>Control de entidades</h3><p>Herramientas para vigilar la creación excesiva de entidades y reducir el spam malicioso.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h4"/></svg></div>
+            <h3>Logs y auditoría</h3><p>Historial de alertas y acciones administrativas para facilitar el seguimiento de incidentes.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div>
+            <h3>Sanciones configurables</h3><p>Preparado para flujos de revisión y sanción con permisos, evidencias y opciones de configuración.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h18v14H3z"/><path d="m3 7 9 6 9-6"/></svg></div>
+            <h3>Alertas externas</h3><p>Integración prevista con Discord para que el equipo reciba notificaciones de seguridad.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tecnologia">
+      <div class="wrap status-grid">
+        <div class="reveal">
+          <span class="section-kicker">Scleron Core</span>
+          <h2>Hecho para crecer<br><span class="gradient-text">contigo.</span></h2>
+          <p style="color:var(--muted);font-size:14px;line-height:1.85">Empezaremos con Qbox y una configuración clara. La compatibilidad con otros frameworks y recursos se ampliará con pruebas reales y excepciones para evitar alertas incorrectas.</p>
+          <ul class="benefits">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg> Configuración mediante archivos fáciles de editar.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg> Permisos para proteger las acciones administrativas.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg> Pruebas antes de activar sanciones automáticas.</li>
+          </ul>
+        </div>
+        <div class="status-card reveal">
+          <div class="status-top"><strong>ESTADO DEL PROYECTO</strong><span class="pill">BUILD 001</span></div>
+          <div class="status-row"><span>Sitio web</span><span class="status-value">Versión inicial</span></div>
+          <div class="status-row"><span>Framework prioritario</span><span class="status-value">Qbox</span></div>
+          <div class="status-row"><span>Protecciones del recurso</span><span class="status-value">En desarrollo</span></div>
+          <div class="status-row"><span>Integración Discord</span><span class="status-value">Planificada</span></div>
+          <div class="status-row"><span>Descarga pública</span><span class="status-value">Próximamente</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="release" id="descargas">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="section-kicker">Centro de descargas</span>
+          <h2>Tu próxima capa<br><span class="gradient-text">de seguridad.</span></h2>
+          <p>La descarga se habilitará cuando el recurso esté preparado y probado. No publicaremos archivos vacíos ni versiones que aparenten proteger un servidor sin hacerlo.</p>
+        </div>
+        <div class="release-card reveal">
+          <div>
+            <h3>Scleron Anti Cheat <span style="color:var(--blue-bright)">v1.0.0</span></h3>
+            <p>Primera versión pública · Recurso FiveM</p>
+            <div class="release-meta"><span>Qbox prioritario</span><span>Gratis al lanzamiento</span><span>Instalación documentada</span></div>
+          </div>
+          <button class="btn btn-primary btn-disabled" type="button" id="downloadButton" aria-disabled="true">Descarga próximamente</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="actualizaciones">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="section-kicker">Changelog</span>
+          <h2>Actualizaciones del <span class="gradient-text">proyecto.</span></h2>
+          <p>Consulta el progreso y las novedades de Scleron Anti Cheat.</p>
+        </div>
+        <div class="status-card reveal">
+          <div class="status-top"><strong>16 OCT 2026 · SITIO WEB</strong><span class="pill">BUILD 001</span></div>
+          <div style="padding-top:18px">
+            <h3 style="margin:0 0 8px;font-size:15px">Presentación inicial de Scleron</h3>
+            <p style="color:var(--muted);font-size:12px;line-height:1.8;margin:0">Se publica la primera estructura visual del proyecto, con diseño adaptable, módulos previstos y centro de descargas en preparación.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <div class="cta-inner reveal">
+          <span class="section-kicker">La seguridad empieza aquí</span>
+          <h2>Construyamos algo <span class="gradient-text">más seguro.</span></h2>
+          <p>Scleron Anti Cheat está en desarrollo. Vuelve para consultar nuevas versiones, documentación y herramientas de protección para FiveM.</p>
+          <a class="btn btn-primary" href="#actualizaciones">Ver actualizaciones <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true">S</span><span>SCLERON<small>ANTI CHEAT</small></span></a>
+      <span class="copyright">© <span id="year">2026</span> Scleron Anti Cheat. Proyecto independiente.</span>
+      <div class="footer-links"><a href="#proteccion">Protección</a><a href="#descargas">Descargas</a><a href="#actualizaciones">Actualizaciones</a></div>
+    </div>
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite">La descarga estará disponible cuando se publique la primera versión.</div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(open));
+      menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      menuToggle.textContent = open ? '×' : '☰';
+    });
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', 'Abrir menú');
+      menuToggle.textContent = '☰';
+    }));
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const toast = document.getElementById('toast');
+    document.getElementById('downloadButton').addEventListener('click', () => {
+      toast.classList.add('show');
+      window.setTimeout(() => toast.classList.remove('show'), 3200);
+    });
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
+  </script>
+</body>
+</html>
